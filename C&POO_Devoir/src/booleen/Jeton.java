@@ -1,5 +1,7 @@
 package booleen;
 
+import java.util.HashMap;
+
 public class Jeton {
 	
 	protected Type type;
@@ -9,10 +11,11 @@ public class Jeton {
 		Condition,
 		OpperandeOU,
 		OpperandeET,
+		OpperandeNON,
 		Fait,
 		Inconnu,
 		FinCondition,
-		FinRegle
+		FinFichier
      }
 	
 	protected Jeton(Type type, String representation) {
@@ -31,17 +34,20 @@ public class Jeton {
 	public boolean estOpperandeET() {
 		return type == Jeton.Type.OpperandeET;
 	}
+	
+	public boolean estOpperandeNON() {
+		return type == Jeton.Type.OpperandeNON;
+	}
 
-	public boolean estDansLaBase() {
-		return type == Jeton.Type.Fait;
+	public boolean estDansLaBase(HashMap<String, Boolean> MapFait) {
+		return type == Jeton.Type.Fait && MapFait.containsKey(representation);
 	}
 	
 	public boolean estFinCondition() {
 		return type == Jeton.Type.FinCondition;
 	}
 	
-	public boolean estFinRegle() {
-		return type == Jeton.Type.FinRegle;
+	public boolean estFinFichier() {
+		return type == Jeton.Type.FinFichier;
 	}
-
 }

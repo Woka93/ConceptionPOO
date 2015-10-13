@@ -33,10 +33,9 @@ public class DemoFait {
 
         try {
             if (syntaxique.verifier()) {
-                System.out.println("Règle déclenchable");
+                System.out.println("Déduction terminée");
                 return;
             }
-            System.out.println("Règle non déclenchable");
         }
         catch(IOException e) {
             System.err.println("Impossible de lire [" + args[0] + "]");

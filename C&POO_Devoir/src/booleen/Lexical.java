@@ -23,10 +23,19 @@ public class Lexical {
     	return position;
     }
 	
+    public void resetLecteur() {
+		try {
+			lecteur.reset();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
 	public Jeton suivant() throws IOException {
 		
 		if (! avancer()) {
-		    //return FabriqueJeton.finExpression();
+		    return FabriqueJeton.finFichier();
 		}
 	
 		// Caractere correspondant a la position courante.
@@ -35,21 +44,25 @@ public class Lexical {
 		// Il faut identifier le jeton.
 		switch(caractere) {   
 	 
-		case '?': // Parenthese ouvrante.
+		case '?':
 		    position ++;
 		    return FabriqueJeton.condition();
 	
-		case '&': // Parenthese fermante.
+		case '&':
 		    position ++;
 		    return FabriqueJeton.opperandeET();
 	
-		case '|': // Operateur d'addition.
+		case '|':
 		    position ++;
 		    return FabriqueJeton.opperandeOU();
-	
-		case ':': // Operateur de soustraction.
+		    
+		case '!':
 		    position ++;
-		    return FabriqueJeton.finRegle();
+		    return FabriqueJeton.opperandeNON();
+	
+		case '=':
+		    position ++;
+		    return FabriqueJeton.finCondition();
 	
 		default: // Chiffre ou bien representation inconnue.
 		    if (Character.isAlphabetic(caractere)) {
@@ -63,7 +76,6 @@ public class Lexical {
 	}
 	
 	public boolean avancer() throws IOException {
-		
 		while (true) {
 			while (position < ligne.length() && Character.isWhitespace(ligne.charAt(position))) {
 				position ++;
@@ -108,5 +120,13 @@ public class Lexical {
 			return true;
 		}
 		return false;
+	}
+
+	public void depart() {
+		try {
+			lecteur.mark(0);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

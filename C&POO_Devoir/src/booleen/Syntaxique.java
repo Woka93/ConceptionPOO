@@ -1,39 +1,59 @@
 package booleen;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Syntaxique {
 
 	protected Lexical lexical;
 	protected Jeton precharge;
+	private HashMap<String,Boolean> MapFait = new HashMap<String,Boolean>();
 	
 	public Syntaxique(Lexical lexical) {
     	this.lexical = lexical;
+    	MapFait.put("a", true);
     }
 
     public boolean verifier() throws IOException {
 
-		precharge = lexical.suivant();
-		Ssytem.out.println(precharge.representation);
-	
-		if (! estRegleDeclanchable()) {
-		    return false;
-		}
-		
-		if (precharge.estFinCondition()) {
-			ajoutDansLaBase(lexical.suivant());
+    	int size = 0;
+    	
+		lexical.depart();
+    	
+    	do {
+    		size = MapFait.size();
 			precharge = lexical.suivant();
-		}
-		return precharge.estFinRegle();
+			System.out.println(precharge.representation);
+			
+    		while (!precharge.estFinFichier()) {
+			
+    			if (estRegleDeclenchable()) {
+				
+					if (precharge.estFinCondition()) {
+						precharge = lexical.suivant();
+						ajoutDansLaBase(precharge);
+					}
+    			}
+    			precharge = lexical.suivant();
+    			System.out.println(precharge.representation);
+    		}
+    		lexical.resetLecteur();
+    	}
+    	while (size != MapFait.size());
+    	
+    	//System.out.println(MapFait.toString());
+    	
+    	return true;
     }
     
-    protected boolean estRegleDeclanchable() throws IOException {
+    protected boolean estRegleDeclenchable() throws IOException {
     	
     	if (precharge.estCondition()) {
     		precharge = lexical.suivant();
+			System.out.println(precharge.representation);
     	}
     	
-    	if (!estFaitVrai()) {
+    	if (!estFait(MapFait)) {
     		return false;
     	}
     	
@@ -41,10 +61,9 @@ public class Syntaxique {
     		return false;
     	}
     	
-    	if (!estFaitVrai()) {
+    	if (!estFait(MapFait)) {
     		return false;
     	}
-    	
     	return true;
     }
     
@@ -52,20 +71,24 @@ public class Syntaxique {
     	
     	if (precharge.estOpperandeET() || precharge.estOpperandeOU()) {
     		precharge = lexical.suivant();
+			System.out.println(precharge.representation);
     		return true;
     	}
-    	return false;    	
+    	return false;
     }
     
-    protected boolean estFaitVrai() throws IOException {
-    	if (precharge.estDansLaBase()) {
+    protected boolean estFait(HashMap<String, Boolean> MapFait) throws IOException {
+    	
+    	if (precharge.estDansLaBase(MapFait) && MapFait.get(precharge.representation)) {
     		precharge = lexical.suivant();
+			System.out.println(precharge.representation);
     		return true;
     	}
     	return false;
     }
 
 	public void ajoutDansLaBase(Jeton fait) {
-		System.out.println("Règle déclenchée");
+		MapFait.put(fait.representation, true);
+		System.out.println("Ajout de '" + fait.representation + "' dans la base");
 	}
 }
