@@ -2,12 +2,29 @@ package booleen;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.util.ArrayList;
 
 public class Lexical {
 	
 	protected LineNumberReader lecteur;
 	protected String ligne;
+	protected int PositionListe = -1;
 	protected int position;
+	
+	
+	public int getPosition() {
+		return position;
+	}
+	
+	public int getPositionListe() {
+		return PositionListe;
+	}
+
+	public ArrayList<String> getListe() {
+		return liste;
+	}
+
+	protected ArrayList<String> liste = new ArrayList<String>();
 	
 	public Lexical (LineNumberReader lecteur) {
 		this.lecteur = lecteur;
@@ -15,29 +32,29 @@ public class Lexical {
 		position = 0;
 	}
 	
+	public void InitBasedeFait() throws IOException{
+		String ligne;
+		while ((ligne=lecteur.readLine())!=null){
+			liste.add(ligne);
+		}
+	}
+	
+	public void ResetListe(){
+		PositionListe = -1;
+	}
+	
 	public String lireLigne() {
-    	return ligne;
+    	return ligne = liste.get(PositionListe);
     }
 
     public int lirePosition() {
     	return position;
     }
-	
-    public void resetLecteur() {
-		try {
-			lecteur.reset();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
     
 	public Jeton suivant() throws IOException {
 		
-		if (! avancer()) {
-		    return FabriqueJeton.finFichier();
-		}
-	
+		avancer();
+
 		// Caractere correspondant a la position courante.
 		char caractere = ligne.charAt(position); 
 	
@@ -75,23 +92,25 @@ public class Lexical {
 
 	}
 	
-	public boolean avancer() throws IOException {
-		while (true) {
+	public void avancer() throws IOException {
+			
+		while (true){
 			while (position < ligne.length() && Character.isWhitespace(ligne.charAt(position))) {
 				position ++;
 			}
 			
 		    if (position == ligne.length()) {
 		    	
-				ligne = lecteur.readLine();
-				
-				if (ligne == null) {
-				    return false;
+		    	PositionListe++;
+		    	
+				if (PositionListe > liste.size()) {
+				    return;
 				}
+				ligne = lireLigne();
 				position = 0;
 		    }
 		    else {
-		    	return true;
+		    	return;
 		    }
 		}
 	}
@@ -121,12 +140,16 @@ public class Lexical {
 		}
 		return false;
 	}
+	
+	public void RegleSuivante(){
+		//System.out.println(PositionListe);
+		PositionListe++;
+		//System.out.println(PositionListe);
+	}
 
-	public void depart() {
-		try {
-			lecteur.mark(0);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void SupprimerRegleDeduit(){
+		liste.remove(PositionListe);
+		PositionListe--;
+		System.out.println(liste.toString());
 	}
 }

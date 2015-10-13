@@ -7,7 +7,7 @@ import java.io.LineNumberReader;
 
 public class DemoFait {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
         if (args.length == 0) {
             System.out.println("Usage: java DemoLexical nomdefichier");
@@ -27,8 +27,11 @@ public class DemoFait {
             return;
         }
 
+        
         Lexical lexical = new Lexical(lecteur);
-
+        
+        lexical.InitBasedeFait();
+        
         Syntaxique syntaxique = new Syntaxique(lexical);
 
         try {

@@ -18,14 +18,12 @@ public class Syntaxique {
 
     	int size = 0;
     	
-		lexical.depart();
-    	
     	do {
     		size = MapFait.size();
 			precharge = lexical.suivant();
-			System.out.println(precharge.representation);
+			//System.out.println(precharge.representation);
 			
-    		while (!precharge.estFinFichier()) {
+    		while (lexical.getListe().size() != lexical.getPositionListe()) {
 			
     			if (estRegleDeclenchable()) {
 				
@@ -33,11 +31,15 @@ public class Syntaxique {
 						precharge = lexical.suivant();
 						ajoutDansLaBase(precharge);
 					}
-    			}
-    			precharge = lexical.suivant();
-    			System.out.println(precharge.representation);
+					
+					//precharge = lexical.suivant();
+	    			//System.out.println(precharge.representation);
+					
+    			}else{
+    				lexical.RegleSuivante();
+    			}	
     		}
-    		lexical.resetLecteur();
+    		lexical.ResetListe();
     	}
     	while (size != MapFait.size());
     	
@@ -54,15 +56,15 @@ public class Syntaxique {
     	}
     	
     	if (!estFait(MapFait)) {
+    		//System.out.println("========>1" + precharge.representation);
     		return false;
     	}
     	
-    	if (!estOpperande()) {
-    		return false;
-    	}
-    	
+    	while (estOpperande()){
+    		//System.out.println("========>2" + precharge.representation);
     	if (!estFait(MapFait)) {
     		return false;
+    	}
     	}
     	return true;
     }
@@ -90,5 +92,6 @@ public class Syntaxique {
 	public void ajoutDansLaBase(Jeton fait) {
 		MapFait.put(fait.representation, true);
 		System.out.println("Ajout de '" + fait.representation + "' dans la base");
+		lexical.SupprimerRegleDeduit();
 	}
 }

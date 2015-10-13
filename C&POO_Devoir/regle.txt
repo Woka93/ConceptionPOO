@@ -1,2 +1,6 @@
-? ad_bc & b : c
-tutu
+? a & a & a = b
+? b & a = d
+? c & d = e
+? z & r = g
+? z & z = y
+? b & d = c
