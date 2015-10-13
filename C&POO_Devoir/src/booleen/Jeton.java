@@ -13,7 +13,6 @@ public class Jeton {
 		OpperandeET,
 		OpperandeNON,
 		Fait,
-		Inconnu,
 		FinCondition,
 		FinFichier
      }

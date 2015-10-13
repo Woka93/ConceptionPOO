@@ -1,5 +1,7 @@
 package booleen;
 
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -9,41 +11,65 @@ public class Syntaxique {
 	protected Jeton precharge;
 	private HashMap<String,Boolean> MapFait = new HashMap<String,Boolean>();
 	
-	public Syntaxique(Lexical lexical) {
+	public Syntaxique(Lexical lexical, BufferedReader fichier_connaissances) throws IOException {
     	this.lexical = lexical;
-    	MapFait.put("a", true);
+    	initialiserBasedeFait(fichier_connaissances);
     }
+	
+	public void initialiserBasedeFait(BufferedReader fichier_connaissances) throws IOException {
+		String ligne;
+		while ((ligne = fichier_connaissances.readLine()) != null) {
+			String[] token = ligne.split(" ");
+			MapFait.put(token[0],Boolean.valueOf(token[2]));
+		}
+	}
 
     public boolean verifier() throws IOException {
 
     	int size = 0;
+    	boolean continuer = true;
     	
     	do {
+    		continuer = true;
     		size = MapFait.size();
 			precharge = lexical.suivant();
-			//System.out.println(precharge.representation);
+			//System.out.println("condition1: " + precharge.representation);
 			
-    		while (lexical.getListe().size() != lexical.getPositionListe()) {
+    		while (continuer) {
 			
     			if (estRegleDeclenchable()) {
 				
 					if (precharge.estFinCondition()) {
 						precharge = lexical.suivant();
-						ajoutDansLaBase(precharge);
+						if (precharge.estOpperandeNON()) {
+							precharge = lexical.suivant();
+							ajoutDansLaBase(precharge, false);
+						} else {
+							ajoutDansLaBase(precharge, true);
+						}
+						if (lexical.getPositionListe() == lexical.getListe().size()-1) {
+							continuer = false;
+						}
 					}
-					
-					//precharge = lexical.suivant();
-	    			//System.out.println(precharge.representation);
-					
-    			}else{
-    				lexical.RegleSuivante();
+					if (continuer) {
+						precharge = lexical.suivant();
+		    			//System.out.println("condition2: " + precharge.representation);
+					}
+				}
+    			else {
+    				if (lexical.getPositionListe() == lexical.getListe().size()-1) {
+						continuer = false;
+					}
+    				if (continuer) {
+    					precharge = lexical.RegleSuivante();
+    				}
     			}	
     		}
     		lexical.ResetListe();
     	}
     	while (size != MapFait.size());
     	
-    	//System.out.println(MapFait.toString());
+    	System.out.println(MapFait.toString());
     	
     	return true;
     }
@@ -52,19 +78,19 @@ public class Syntaxique {
     	
     	if (precharge.estCondition()) {
     		precharge = lexical.suivant();
-			System.out.println(precharge.representation);
+			//System.out.println("1 er fait : " + precharge.representation);
     	}
-    	
+    	    	
     	if (!estFait(MapFait)) {
-    		//System.out.println("========>1" + precharge.representation);
+    		//System.out.println("=======>1 : " + precharge.representation);
     		return false;
     	}
     	
     	while (estOpperande()){
-    		//System.out.println("========>2" + precharge.representation);
-    	if (!estFait(MapFait)) {
-    		return false;
-    	}
+	    	if (!estFait(MapFait)) {
+	    		//System.out.println("=======>2 : " + precharge.representation);
+	    		return false;
+	    	}
     	}
     	return true;
     }
@@ -73,7 +99,7 @@ public class Syntaxique {
     	
     	if (precharge.estOpperandeET() || precharge.estOpperandeOU()) {
     		precharge = lexical.suivant();
-			System.out.println(precharge.representation);
+			//System.out.println("2 nd fait : " + precharge.representation);
     		return true;
     	}
     	return false;
@@ -83,15 +109,24 @@ public class Syntaxique {
     	
     	if (precharge.estDansLaBase(MapFait) && MapFait.get(precharge.representation)) {
     		precharge = lexical.suivant();
-			System.out.println(precharge.representation);
+			//System.out.println("oppérande : " + precharge.representation);
     		return true;
     	}
     	return false;
     }
 
-	public void ajoutDansLaBase(Jeton fait) {
-		MapFait.put(fait.representation, true);
-		System.out.println("Ajout de '" + fait.representation + "' dans la base");
+	public void ajoutDansLaBase(Jeton fait, boolean etat) {
+		MapFait.put(fait.representation, etat);
+		System.out.println("Ajout de '" + fait.representation + "' dans la base à l'état " + etat);
 		lexical.SupprimerRegleDeduit();
+	}
+
+	public void FichierDeduction(FileOutputStream out) throws IOException {
+		
+		String deduc = "Fait booleen : " + MapFait.toString();
+		
+		for (int i = 0; i < deduc.length(); i++) {
+			out.write(deduc.charAt(i));
+		}
 	}
 }

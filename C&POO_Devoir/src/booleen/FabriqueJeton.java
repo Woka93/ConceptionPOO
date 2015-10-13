@@ -36,8 +36,4 @@ public class FabriqueJeton {
 	public static Jeton fait(String representation) {
 		return new Jeton(Jeton.Type.Fait, representation);
 	}
-
-	public static Jeton inconnu(String representation) {
-		return new Jeton(Jeton.Type.Inconnu, representation);
-	}
 }

@@ -32,7 +32,7 @@ public class Lexical {
 		position = 0;
 	}
 	
-	public void InitBasedeFait() throws IOException{
+	public void InitFichierRegle() throws IOException{
 		String ligne;
 		while ((ligne=lecteur.readLine())!=null){
 			liste.add(ligne);
@@ -81,13 +81,8 @@ public class Lexical {
 		    position ++;
 		    return FabriqueJeton.finCondition();
 	
-		default: // Chiffre ou bien representation inconnue.
-		    if (Character.isAlphabetic(caractere)) {
-		    	return extraireToken();
-		    }
-		    // C'est la representation inconnue.
-		    position ++;
-		    return FabriqueJeton.inconnu(ligne.substring(position - 1, position));
+		default:
+		    return extraireToken();
 		}
 
 	}
@@ -141,15 +136,18 @@ public class Lexical {
 		return false;
 	}
 	
-	public void RegleSuivante(){
-		//System.out.println(PositionListe);
-		PositionListe++;
-		//System.out.println(PositionListe);
+	public Jeton RegleSuivante() throws IOException{
+		Jeton precharge = suivant();
+		while (precharge.representation != "?") {
+			precharge = suivant();
+			//System.out.println("test: " + precharge.representation);
+		}
+		return precharge;
 	}
 
 	public void SupprimerRegleDeduit(){
 		liste.remove(PositionListe);
 		PositionListe--;
-		System.out.println(liste.toString());
+		//System.out.println(liste.toString());
 	}
 }

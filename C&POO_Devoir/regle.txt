@@ -1,6 +1,7 @@
-? a & a & a = b
+? a = b
 ? b & a = d
-? c & d = e
+? c & d = !e
 ? z & r = g
-? z & z = y
+? z = y
 ? b & d = c
+? r & c = f
