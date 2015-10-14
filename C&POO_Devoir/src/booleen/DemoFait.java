@@ -20,9 +20,9 @@ public class DemoFait {
             return;
         }
 
-        LineNumberReader lecteur = null;
+        LineNumberReader baseregle = null;
         try {
-            lecteur = new LineNumberReader(new FileReader(args[0]));
+        	baseregle = new LineNumberReader(new FileReader(args[0]));
         }
         catch(FileNotFoundException e) {
             System.err.println("Le fichier [" + args[0] + "] n'existe pas.");
@@ -35,14 +35,14 @@ public class DemoFait {
         }
         catch(FileNotFoundException e) {
             System.err.println("Le fichier [" + args[1] + "] n'existe pas.");
-            lecteur.close();
+            baseregle.close();
             return;
         }
         
 		FileOutputStream out = new FileOutputStream(args[2]);
 
         
-        Lexical lexical = new Lexical(lecteur);
+        Lexical lexical = new Lexical(baseregle);
         
         lexical.InitFichierRegle();
         
@@ -59,7 +59,7 @@ public class DemoFait {
             System.err.println("Impossible de lire [" + args[0] + "]");
             return;
         }
-        lecteur.close();
+        baseregle.close();
         basefait.close();
         out.close();
     }

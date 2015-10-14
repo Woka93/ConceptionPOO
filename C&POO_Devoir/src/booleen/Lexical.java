@@ -41,6 +41,13 @@ public class Lexical {
 	
 	public void ResetListe(){
 		PositionListe = -1;
+		ligne = "";
+		position = 0;
+	}
+	
+	public void ResetListe1(){
+		PositionListe = 0;
+		position = 0;
 	}
 	
 	public String lireLigne() {
@@ -51,16 +58,14 @@ public class Lexical {
     	return position;
     }
     
-public Jeton suivant() throws IOException {
-		
+    public Jeton suivant() throws IOException {
+    	
 		if(!avancer()){
-			//System.out.println("coucou");
 			return FabriqueJeton.finFichier();
 		}
-		//System.out.println(position);
 		// Caractere correspondant a la position courante.
 		char caractere = ligne.charAt(position); 
-		//System.out.println(caractere);
+		
 		// Il faut identifier le jeton.
 		switch(caractere) {   
 	 
@@ -87,7 +92,6 @@ public Jeton suivant() throws IOException {
 		default:
 		    return extraireToken();
 		}
-
 	}
 	
 	public boolean avancer() throws IOException {
@@ -98,8 +102,6 @@ public Jeton suivant() throws IOException {
 			}
 			
 		    if (position == ligne.length()) {
-		    
-				//System.out.println(PositionListe + " " + liste.size());
 
 				if (PositionListe >= liste.size()) {
 				    return false;
@@ -143,12 +145,9 @@ public Jeton suivant() throws IOException {
 	
 	public boolean DerniereRegle(){
 		
-		//System.out.println("PostionListe : " + PositionListe + " ListeSize : " + liste.size());
-		
 		if(PositionListe == liste.size() - 1){
 			return true;
 		}
-		
 		return false;
 	}
 	
@@ -156,7 +155,6 @@ public Jeton suivant() throws IOException {
 		Jeton precharge = suivant();
 		while (precharge.representation != "?") {
 			precharge = suivant();
-			//System.out.println("test: " + precharge.representation);
 		}
 		return precharge;
 	}
@@ -164,10 +162,9 @@ public Jeton suivant() throws IOException {
 	public void SupprimerRegleDeduit(){
 		liste.remove(PositionListe);
 		PositionListe--;
-		//System.out.println(liste.toString());
 	}
 
-	public void setPositionListe(int positionListe) {
-		PositionListe = positionListe;
+	public void UpPositionListe() {
+		PositionListe++;
 	}
 }

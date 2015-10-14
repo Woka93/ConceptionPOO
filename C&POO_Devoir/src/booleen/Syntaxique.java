@@ -27,61 +27,59 @@ public class Syntaxique {
     public boolean verifier() throws IOException {
 
     	int size = 0;
+    	boolean derniereRegleVrai = false;
     	
     	precharge = lexical.suivant();
+    	
 		do{
 			size = MapFait.size();
-
-			boolean continuer = true;
-			//while(lexical.getPositionListe() < lexical.getListe().size()){
-			while (continuer) {
-	    		//System.out.println(lexical.getPositionListe());
-	    		//System.out.println(Jeton.Type.FinFichier);
+			
+			if (lexical.getListe().size() == 0) {
+				return true;
+			}
+			
+			while(lexical.getPositionListe() < lexical.getListe().size()){
 				
-				//System.out.println(lexical.getListe().toString());
+				if (derniereRegleVrai) {
+					precharge = lexical.suivant();
+					derniereRegleVrai = false;
+				}
 				
 	    		if (estRegleDeclenchable()){
-	    			//System.out.println(lexical.getPositionListe());
 					ajoutDansLaBase(precharge, true);
-					//System.out.println(lexical.getPositionListe());
-					if(!lexical.DerniereRegle()){
+					if(!lexical.DerniereRegle()) {
 						precharge = lexical.suivant();
+					} else {
+						derniereRegleVrai = true;
+						lexical.UpPositionListe();
 					}
 		    	}else{
 		    		if(!lexical.DerniereRegle()){
 		    			precharge = lexical.RegleSuivante();
-		    		}
+		    		} else {
+						lexical.UpPositionListe();
+					}
 		    	}
-	    		
-		    	//System.out.println("=>" + lexical.getPositionListe() + " " + lexical.getListe().size());
-    		}	    	
-			//System.out.println(lexical.getPositionListe() + " " + lexical.getPosition());
+    		}
 	    	lexical.ResetListe();
-	    	//System.out.println(lexical.getPositionListe() + " " + lexical.getPosition());
-	    	//System.out.println(size + " " + MapFait.size());
-		}while (size < MapFait.size());
-    	
-		System.out.println(MapFait.toString());
+		} while (size < MapFait.size());
 		
 		return true;
     }
     
     protected boolean estRegleDeclenchable() throws IOException {
-    	    	
-    	//precharge = lexical.suivant();
-    	//System.out.println(" 1 : " + precharge.representation);
-    	if(precharge.estOpperandeET()){ precharge = lexical.suivant(); }
-    	if(precharge.estOpperandeOU()){ return false; }
+    	
+    	if(precharge.estOpperandeET()) { 
+    		precharge = lexical.suivant();
+    		System.out.println(precharge.representation);
+    	}
     	
     	if(!EstET()){ return false; }
     	
-    	while(precharge.estOpperandeET()){
+    	while(precharge.estOpperandeET()) {
     		precharge = lexical.suivant();
-    		//System.out.println(" 2 : " + precharge.representation);
     		if(!EstET()){ return false; }
-    		
     	}
-    	
     	return true;
     }
     
@@ -89,11 +87,10 @@ public class Syntaxique {
     	
     	if(!EstOU()){ return false; }
     	
-    	while(precharge.estOpperandeET()){
+    	while(precharge.estOpperandeET()) {
 			precharge = lexical.suivant();
 			if(!EstOU()) {return false;}
 		}
-    	
     	return true;
     }
     
@@ -101,34 +98,21 @@ public class Syntaxique {
 		
     	if(!EstFait()){ return false; }
     	
-    	while(precharge.estOpperandeOU()){
+    	while(precharge.estOpperandeOU()) {
 			precharge = lexical.suivant();
 			if(!EstFait()) {return false;}
 		}
-    	
 		return true;
 	}
-
-	protected boolean estOpperande() throws IOException {
-    	
-    	if (precharge.estOpperandeET() || precharge.estOpperandeOU()) {
-    		precharge = lexical.suivant();
-			//System.out.println("2 nd fait : " + precharge.representation);
-    		return true;
-    	}
-    	return false;
-    }
     
     protected boolean EstFait() throws IOException {
 
     	if (precharge.estDansLaBase(MapFait) /*&& MapFait.get(precharge.representation)*/) {
     		precharge = lexical.suivant();
-			//System.out.println("oppérande : " + precharge.representation);
     		return true;
     	}
     	if (!precharge.estCondition()) {
     		return false;
-			//System.out.println("1 er fait : " + precharge.representation);
     	}
     	precharge = lexical.suivant();
 		if (!estRegleDeclenchable() || !precharge.estFinCondition()) {
@@ -148,6 +132,7 @@ public class Syntaxique {
 	public void FichierDeduction(FileOutputStream out) throws IOException {
 		
 		String deduc = "Fait booleen : " + MapFait.toString();
+		System.out.println(MapFait.toString());
 		
 		for (int i = 0; i < deduc.length(); i++) {
 			out.write(deduc.charAt(i));

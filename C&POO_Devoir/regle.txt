@@ -1,7 +1,5 @@
-? a = b
 ? b & a = d
-? c & d = !e
-? z & r = g
-? z = y
+? c & d = f
+? z & z = r
 ? b & d = c
-? r & c = f
+? a & f = e
