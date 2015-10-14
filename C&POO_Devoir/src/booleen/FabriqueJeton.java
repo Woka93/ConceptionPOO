@@ -7,7 +7,7 @@ public class FabriqueJeton {
 	protected static final Jeton opperandeET = new Jeton (Jeton.Type.OpperandeET, "&");
 	protected static final Jeton opperandeNON = new Jeton (Jeton.Type.OpperandeNON, "!");
 	protected static final Jeton finCondition = new Jeton (Jeton.Type.FinCondition, "=");
-	protected static final Jeton finFichier = new Jeton (Jeton.Type.FinFichier, "");
+	protected static final Jeton finFichier = new Jeton (Jeton.Type.FinFichier, ".");
 	
 	public static Jeton condition() {
 		return condition;

@@ -27,66 +27,89 @@ public class Syntaxique {
     public boolean verifier() throws IOException {
 
     	int size = 0;
-    	boolean continuer = true;
     	
-    	do {
-    		continuer = true;
-    		size = MapFait.size();
-			precharge = lexical.suivant();
-			//System.out.println("condition1: " + precharge.representation);
-			
-    		while (continuer) {
-    			// Si Regle déclenchable
-    			if (estRegleDeclenchable()) {
+    	precharge = lexical.suivant();
+		do{
+			size = MapFait.size();
+
+			boolean continuer = true;
+			//while(lexical.getPositionListe() < lexical.getListe().size()){
+			while (continuer) {
+	    		//System.out.println(lexical.getPositionListe());
+	    		//System.out.println(Jeton.Type.FinFichier);
 				
-					if (precharge.estFinCondition()) {
+				//System.out.println(lexical.getListe().toString());
+				
+	    		if (estRegleDeclenchable()){
+	    			//System.out.println(lexical.getPositionListe());
+					ajoutDansLaBase(precharge, true);
+					//System.out.println(lexical.getPositionListe());
+					if(!lexical.DerniereRegle()){
 						precharge = lexical.suivant();
-						if (precharge.estOpperandeNON()) {
-							precharge = lexical.suivant();
-							ajoutDansLaBase(precharge, false);
-						} else {
-							ajoutDansLaBase(precharge, true);
-						}
 					}
-				}
-    			// Verification fin de liste
-    			if (lexical.getPositionListe() == lexical.getListe().size()-1) {
-					continuer = false;
-				}else{
-					precharge = lexical.RegleSuivante();
-				}	
-    		}
-    		lexical.ResetListe();
-    	}
-    	while (size != MapFait.size());
+		    	}else{
+		    		if(!lexical.DerniereRegle()){
+		    			precharge = lexical.RegleSuivante();
+		    		}
+		    	}
+	    		
+		    	//System.out.println("=>" + lexical.getPositionListe() + " " + lexical.getListe().size());
+    		}	    	
+			//System.out.println(lexical.getPositionListe() + " " + lexical.getPosition());
+	    	lexical.ResetListe();
+	    	//System.out.println(lexical.getPositionListe() + " " + lexical.getPosition());
+	    	//System.out.println(size + " " + MapFait.size());
+		}while (size < MapFait.size());
     	
-    	System.out.println(MapFait.toString());
-    	
-    	return true;
+		System.out.println(MapFait.toString());
+		
+		return true;
     }
     
     protected boolean estRegleDeclenchable() throws IOException {
-    	
-    	if (precharge.estCondition()) {
-    		precharge = lexical.suivant();
-			//System.out.println("1 er fait : " + precharge.representation);
-    	}
     	    	
-    	if (!estFait(MapFait)) {
-    		//System.out.println("=======>1 : " + precharge.representation);
-    		return false;
+    	//precharge = lexical.suivant();
+    	//System.out.println(" 1 : " + precharge.representation);
+    	if(precharge.estOpperandeET()){ precharge = lexical.suivant(); }
+    	if(precharge.estOpperandeOU()){ return false; }
+    	
+    	if(!EstET()){ return false; }
+    	
+    	while(precharge.estOpperandeET()){
+    		precharge = lexical.suivant();
+    		//System.out.println(" 2 : " + precharge.representation);
+    		if(!EstET()){ return false; }
+    		
     	}
     	
-    	while (estOpperande()){
-	    	if (!estFait(MapFait)) {
-	    		//System.out.println("=======>2 : " + precharge.representation);
-	    		return false;
-	    	}
-    	}
     	return true;
     }
     
-    protected boolean estOpperande() throws IOException {
+    public boolean EstET() throws IOException{
+    	
+    	if(!EstOU()){ return false; }
+    	
+    	while(precharge.estOpperandeET()){
+			precharge = lexical.suivant();
+			if(!EstOU()) {return false;}
+		}
+    	
+    	return true;
+    }
+    
+    private boolean EstOU() throws IOException {
+		
+    	if(!EstFait()){ return false; }
+    	
+    	while(precharge.estOpperandeOU()){
+			precharge = lexical.suivant();
+			if(!EstFait()) {return false;}
+		}
+    	
+		return true;
+	}
+
+	protected boolean estOpperande() throws IOException {
     	
     	if (precharge.estOpperandeET() || precharge.estOpperandeOU()) {
     		precharge = lexical.suivant();
@@ -96,14 +119,24 @@ public class Syntaxique {
     	return false;
     }
     
-    protected boolean estFait(HashMap<String, Boolean> MapFait) throws IOException {
-    	
-    	if (precharge.estDansLaBase(MapFait) && MapFait.get(precharge.representation)) {
+    protected boolean EstFait() throws IOException {
+
+    	if (precharge.estDansLaBase(MapFait) /*&& MapFait.get(precharge.representation)*/) {
     		precharge = lexical.suivant();
 			//System.out.println("oppérande : " + precharge.representation);
     		return true;
     	}
-    	return false;
+    	if (!precharge.estCondition()) {
+    		return false;
+			//System.out.println("1 er fait : " + precharge.representation);
+    	}
+    	precharge = lexical.suivant();
+		if (!estRegleDeclenchable() || !precharge.estFinCondition()) {
+			return false;
+		}
+    	precharge = lexical.suivant();
+
+    	return true;
     }
 
 	public void ajoutDansLaBase(Jeton fait, boolean etat) {

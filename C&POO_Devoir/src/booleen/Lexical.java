@@ -51,13 +51,16 @@ public class Lexical {
     	return position;
     }
     
-	public Jeton suivant() throws IOException {
+public Jeton suivant() throws IOException {
 		
-		avancer();
-
+		if(!avancer()){
+			//System.out.println("coucou");
+			return FabriqueJeton.finFichier();
+		}
+		//System.out.println(position);
 		// Caractere correspondant a la position courante.
 		char caractere = ligne.charAt(position); 
-	
+		//System.out.println(caractere);
 		// Il faut identifier le jeton.
 		switch(caractere) {   
 	 
@@ -87,7 +90,7 @@ public class Lexical {
 
 	}
 	
-	public void avancer() throws IOException {
+	public boolean avancer() throws IOException {
 			
 		while (true){
 			while (position < ligne.length() && Character.isWhitespace(ligne.charAt(position))) {
@@ -95,17 +98,19 @@ public class Lexical {
 			}
 			
 		    if (position == ligne.length()) {
-		    	
-		    	PositionListe++;
-		    	
-				if (PositionListe > liste.size()) {
-				    return;
+		    
+				//System.out.println(PositionListe + " " + liste.size());
+
+				if (PositionListe >= liste.size()) {
+				    return false;
 				}
+
+				PositionListe++;
 				ligne = lireLigne();
 				position = 0;
 		    }
 		    else {
-		    	return;
+		    	return true;
 		    }
 		}
 	}
@@ -136,6 +141,17 @@ public class Lexical {
 		return false;
 	}
 	
+	public boolean DerniereRegle(){
+		
+		//System.out.println("PostionListe : " + PositionListe + " ListeSize : " + liste.size());
+		
+		if(PositionListe == liste.size() - 1){
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public Jeton RegleSuivante() throws IOException{
 		Jeton precharge = suivant();
 		while (precharge.representation != "?") {
@@ -149,5 +165,9 @@ public class Lexical {
 		liste.remove(PositionListe);
 		PositionListe--;
 		//System.out.println(liste.toString());
+	}
+
+	public void setPositionListe(int positionListe) {
+		PositionListe = positionListe;
 	}
 }
