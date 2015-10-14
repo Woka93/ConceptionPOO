@@ -36,7 +36,7 @@ public class Syntaxique {
 			//System.out.println("condition1: " + precharge.representation);
 			
     		while (continuer) {
-			
+    			// Si Regle déclenchable
     			if (estRegleDeclenchable()) {
 				
 					if (precharge.estFinCondition()) {
@@ -47,23 +47,14 @@ public class Syntaxique {
 						} else {
 							ajoutDansLaBase(precharge, true);
 						}
-						if (lexical.getPositionListe() == lexical.getListe().size()-1) {
-							continuer = false;
-						}
-					}
-					if (continuer) {
-						precharge = lexical.suivant();
-		    			//System.out.println("condition2: " + precharge.representation);
 					}
 				}
-    			else {
-    				if (lexical.getPositionListe() == lexical.getListe().size()-1) {
-						continuer = false;
-					}
-    				if (continuer) {
-    					precharge = lexical.RegleSuivante();
-    				}
-    			}	
+    			// Verification fin de liste
+    			if (lexical.getPositionListe() == lexical.getListe().size()-1) {
+					continuer = false;
+				}else{
+					precharge = lexical.RegleSuivante();
+				}	
     		}
     		lexical.ResetListe();
     	}
